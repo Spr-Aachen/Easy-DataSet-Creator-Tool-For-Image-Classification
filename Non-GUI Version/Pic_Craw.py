@@ -55,31 +55,21 @@ class Pic_Craw(Set_Params):
         self.Attr_Download_NUM = Download_NUM
 
     def Crawer(self, Cookies, Headers):
-
         for Keyword in self.Attr_Class_List:
-                
             if not os.path.exists('DataSet'):
                 os.makedirs('DataSet')
                 print('新建DataSet文件夹')
-
             if os.path.exists('DataSet/' + Keyword):
                 print('文件夹 DataSet/{}已存在，之后直接将爬取到的图片保存至该文件夹中'.format(Keyword))
             else:
                 os.makedirs('DataSet/{}'.format(Keyword))
                 print('新建文件夹：DataSet/{}'.format(Keyword))
-
             COUNT = 1
-
             with tqdm(total = self.Attr_Download_NUM, position = 0, leave = True) as ProgressBar:
-                
                 NUM = 1
-                
                 Break_Flag = False
-                
                 while not Break_Flag:
-
                     PAGE = 30 * COUNT
-
                     Params = (
                         ('tn', 'resultjson_com'),
                         ('logid', '12508239107856075440'),
@@ -118,48 +108,34 @@ class Pic_Craw(Set_Params):
                         ('gsm', '1e'),
                         ('1647838001666', ''),
                     )
-                    
                     Response = requests.get('https://image.baidu.com/search/acjson', headers = Headers, params = Params, cookies = Cookies)
-                    
                     if Response.status_code == 200:
-
                         try:
                             JSON_Data = Response.json().get('data')
-
                             if JSON_Data:
-
                                 for x in JSON_Data:
-
                                     Type = x.get('type')
                                     if Type not in ['gif']:
                                         IMG = x.get('thumbURL') # 如果改为"objURL"（高清原图）很快会被反爬，慎用！
                                         PageTitle = x.get('fromPageTitleEnc')
-
                                         try:
                                             Response = requests.get(url = IMG, verify = False)
-
                                             time.sleep(uniform(1.2, 2.1))
-
                                             File_Save_Path = f'DataSet/{Keyword}/{NUM}.{Type}' # 若想保留图片原标题，在.{Type}前加上{PageTitle}即可
                                             with open(File_Save_Path, 'wb') as File:
                                                 File.write(Response.content)
                                                 File.flush()
                                                 NUM += 1
                                                 ProgressBar.update(1)
-
                                             if NUM > self.Attr_Download_NUM:
                                                 if not Break_Flag:
                                                     Break_Flag = True
                                                 print(f'{NUM - 1}张图像爬取完毕')
                                                 break
-                                            
                                         except Exception:
                                             pass
-                                        
                         except:
                             pass
-                    
                     else:
                         break
-
                     COUNT += 1
