@@ -28,23 +28,24 @@ class Pic_Analyse:
 
 
 class Info_Visualize(Pic_Analyse):
-    def __init__(self, Size, Colormap, XLable, YLable, FontSize, FileName, Quality):
+    def __init__(self, Size, Colormap, XLable, YLable, FontSize, FileName, FileType, Quality):
         self.Atrr_Size = Size
         self.Atrr_Colormap = Colormap
         self.Atrr_XLable = XLable
         self.Atrr_YLable = YLable
         self.Atrr_FontSize = FontSize
         self.Attr_FileName = FileName
+        self.Atrr_FileType = FileType
         self.Atrr_Quality = Quality
     
     def CreateTable(self, Info):
-        plt.rcParams['font.sans-serif'] = ['SimHei'] # 指定默认字体为黑体，解决中文显示问题
-        mpl.rcParams['axes.unicode_minus'] = False # 解决负号显示问题
-        fig = plt.figure(figsize = (3, 4), dpi = 1400) # dpi set to HD
-        ax = fig.add_subplot(111, frame_on = False) # no visible frame
-        ax.xaxis.set_visible(False) # hide the x axis
-        ax.yaxis.set_visible(False) # hide the y axis
-        pandas.plotting.table(ax, Info, loc = 'center') # where df is your data frame
+        plt.rcParams['font.sans-serif'] = ['SimHei']
+        mpl.rcParams['axes.unicode_minus'] = False
+        fig = plt.figure(figsize = self.Atrr_Size, dpi = self.Atrr_Quality) # Set dpi to custom quality
+        ax = fig.add_subplot(111, frame_on = False) # No visible frame
+        ax.xaxis.set_visible(False) # Hide the x axis
+        ax.yaxis.set_visible(False) # Hide the y axis
+        pandas.plotting.table(ax, Info, loc = 'center') # Where Info is your data frame
         plt.savefig('表格.jpg')
 
     def ScatterPlot(self, Info):
@@ -62,5 +63,5 @@ class Info_Visualize(Pic_Analyse):
         plt.ylim(ymin = 0, ymax = Axis_Max)
         plt.xlabel(self.Atrr_XLable, fontsize = self.Atrr_FontSize)
         plt.ylabel(self.Atrr_YLable, fontsize = self.Atrr_FontSize)
-        plt.savefig(self.Attr_FileName, dpi = self.Atrr_Quality, bbox_inches = 'tight')
+        plt.savefig(self.Attr_FileName + self.Atrr_FileType, dpi = self.Atrr_Quality, bbox_inches = 'tight')
         plt.show()
